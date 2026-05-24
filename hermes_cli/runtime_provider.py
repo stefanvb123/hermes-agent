@@ -476,8 +476,12 @@ def _try_resolve_from_custom_pool(
 
 def _get_named_custom_provider(requested_provider: str) -> Optional[Dict[str, Any]]:
     requested_norm = _normalize_custom_provider_name(requested_provider or "")
-    if not requested_norm or requested_norm == "custom":
+    if not requested_norm:
         return None
+    # Note: We intentionally do NOT return early for requested_norm == "custom"
+    # to allow user-defined custom providers in config.yaml to be matched.
+    # The fallback to environment variables happens later in resolve_runtime_provider
+    # if no matching custom provider is found in config.
 
     # Raw names should only map to custom providers when they are not already
     # valid built-in providers or aliases. Explicit menu keys like
